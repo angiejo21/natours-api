@@ -28,6 +28,9 @@ app.set("views", path.join(__dirname, "views"));
 
 //1) GLOBAL MIDDLEWARES
 app.use(cors());
+//to respond to options http req (pre-flight fase on PUT PATCH DELETE)
+app.options('*', cors());
+
 //Serving static files
 app.use(express.static(path.join(__dirname, "public")));
 //Set security HTTP headers
