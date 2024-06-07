@@ -16,6 +16,7 @@ const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
+const { webhookCheckout } = require("./controllers/bookingController");
 const viewRouter = require("./routes/viewRoutes");
 
 //Start express app
@@ -29,7 +30,7 @@ app.set("views", path.join(__dirname, "views"));
 //1) GLOBAL MIDDLEWARES
 app.use(cors());
 //to respond to options http req (pre-flight fase on PUT PATCH DELETE)
-app.options('*', cors());
+app.options("*", cors());
 
 //Serving static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -46,6 +47,12 @@ const limiter = rateLimit({
   message: "To many requests from this IP, please try again in an hour!",
 });
 app.use("/api", limiter);
+//stripe needs the request in a raw format
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout,
+);
 //Body parser, reading data from body into req.body
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
